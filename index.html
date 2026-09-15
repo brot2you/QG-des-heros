@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Le Quartier Général des Héros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --nuit:#1D3557;
+    --nuit-clair:#2A4A78;
+    --encre:#14141A;
+    --rouge:#E63946;
+    --orange:#FB8B24;
+    --jaune:#FFD60A;
+    --vert:#2A9D8F;
+    --bleu:#457B9D;
+    --violet:#7B5EA7;
+    --papier:#FBF7EE;
+    --papier-fonce:#F0E9D8;
+    --blanc:#FFFFFF;
+    --texte:#20202B;
+    --texte-doux:#5B5C6E;
+    --radius-l:22px;
+    --radius-m:14px;
+    --radius-s:8px;
+    --ombre-bd: 5px 5px 0 var(--encre);
+    --ombre-bd-s: 3px 3px 0 var(--encre);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--papier);
+    color:var(--texte);
+    font-family:'Nunito',sans-serif;
+    min-height:100vh;
+    -webkit-tap-highlight-color:transparent;
+  }
+  h1,h2,h3,.chiffre,.titre-comic{ font-family:'Bangers', cursive; letter-spacing:0.5px; }
+  button{font-family:inherit;}
+  :focus-visible{outline:3px solid var(--jaune); outline-offset:2px;}
+
+  /* ---------- HEADER ---------- */
+  .marquee{
+    background:
+      radial-gradient(3px 3px at 10% 20%, rgba(255,255,255,0.18) 0, transparent 60%),
+      radial-gradient(3px 3px at 30% 60%, rgba(255,255,255,0.14) 0, transparent 60%),
+      radial-gradient(3px 3px at 55% 15%, rgba(255,255,255,0.16) 0, transparent 60%),
+      radial-gradient(3px 3px at 75% 50%, rgba(255,255,255,0.14) 0, transparent 60%),
+      radial-gradient(3px 3px at 90% 25%, rgba(255,255,255,0.18) 0, transparent 60%),
+      linear-gradient(160deg, var(--nuit-clair), var(--nuit) 60%);
+    background-size: 40px 40px, 40px 40px, 40px 40px, 40px 40px, 40px 40px, cover;
+    color:var(--blanc);
+    padding:22px 18px 74px 18px;
+    border-bottom:6px solid var(--encre);
+    position:relative;
+  }
+  .marquee-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
+  .marquee h1{margin:0; font-size:2.1rem; line-height:1; color:var(--jaune); text-shadow: 2px 2px 0 var(--encre), -1px -1px 0 var(--encre), 1px -1px 0 var(--encre), -1px 1px 0 var(--encre);}
+  .marquee p.souscritre{margin:8px 0 0 0; opacity:0.9; font-size:0.95rem; font-weight:700;}
+  .burst-badge{
+    background:var(--rouge);
+    color:var(--blanc);
+    width:92px; height:92px;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    flex:none;
+    clip-path: polygon(50% 0%, 61% 20%, 82% 10%, 80% 33%, 100% 40%, 85% 55%, 95% 75%, 73% 73%, 68% 95%, 50% 80%, 32% 95%, 27% 73%, 5% 75%, 15% 55%, 0% 40%, 20% 33%, 18% 10%, 39% 20%);
+  }
+  .burst-badge span{ font-family:'Bangers', cursive; font-size:0.68rem; line-height:1.15; padding:0 6px;}
+  .nav-pills{ display:flex; gap:8px; margin-top:20px; flex-wrap:wrap; }
+  .nav-pill{
+    border:2.5px solid var(--encre); cursor:pointer;
+    background:var(--blanc); color:var(--encre);
+    padding:9px 15px; border-radius:999px;
+    font-weight:800; font-size:0.9rem;
+    box-shadow: var(--ombre-bd-s);
+    transition:transform .1s ease;
+  }
+  .nav-pill.actif{ background:var(--jaune); }
+  .nav-pill:active{ transform:translate(2px,2px); box-shadow:0 0 0 var(--encre); }
+
+  /* ---------- SHELL ---------- */
+  .ecran{ max-width:760px; margin:-48px auto 40px auto; padding:0 16px; position:relative; z-index:2; }
+  .intro-card{
+    background:var(--blanc); border:3px solid var(--encre); border-radius:var(--radius-m);
+    box-shadow:var(--ombre-bd); padding:14px 16px; font-size:0.92rem; color:var(--texte-doux);
+    margin-bottom:18px; line-height:1.5;
+  }
+  .intro-card b{ color:var(--texte); }
+
+  /* ---------- DIAL ---------- */
+  .dial-wrap{ display:flex; justify-content:center; margin:8px 0 22px 0; }
+  .dial{
+    width:150px;height:150px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--papier-fonce);
+    border:4px solid var(--encre);
+    box-shadow: inset 0 0 0 8px var(--blanc);
+    position:relative;
+  }
+  .dial-fill{
+    position:absolute; inset:4px; border-radius:50%;
+    background:conic-gradient(var(--jaune) calc(var(--pct) * 1%), transparent 0);
+    -webkit-mask:radial-gradient(closest-side, transparent 70%, black 71%);
+    mask:radial-gradient(closest-side, transparent 70%, black 71%);
+    transition:background 0.4s ease;
+  }
+  .dial-txt{ position:relative; text-align:center; }
+  .dial-txt .chiffre{ font-size:1.9rem; line-height:1; display:block;}
+  .dial-txt span.lbl{ font-size:0.68rem; color:var(--texte-doux); font-weight:700;}
+
+  /* ---------- CATEGORY PANELS ---------- */
+  .cat-card{
+    background:var(--blanc); border:3px solid var(--encre); border-radius:var(--radius-m);
+    box-shadow:var(--ombre-bd); margin-bottom:18px; overflow:hidden;
+  }
+  .cat-head{ padding:10px 16px; background:var(--c); border-bottom:3px solid var(--encre); }
+  .cat-head h2{ margin:0; font-size:1.35rem; color:var(--blanc); text-shadow:1px 1px 0 var(--encre);}
+  .cat-head p{ margin:2px 0 0 0; font-size:0.8rem; color:var(--blanc); opacity:0.92; font-weight:700;}
+  .tache-row{ display:flex; align-items:center; gap:12px; padding:10px 16px; border-top:2px solid #EFE6D2; }
+  .tache-row:first-of-type{ border-top:none; }
+  .tache-emoji{ font-size:1.5rem; width:32px; text-align:center; }
+  .tache-label{ flex:1; font-weight:800; font-size:0.96rem; }
+  .tache-pts{ font-size:0.76rem; color:var(--texte-doux); font-weight:800; margin-right:4px; white-space:nowrap;}
+  .check-btn{
+    width:44px;height:44px; min-width:44px; border-radius:50%;
+    border:3px solid var(--encre); background:var(--blanc); cursor:pointer;
+    font-size:1.2rem; display:flex; align-items:center; justify-content:center;
+    transition:transform .12s ease, background .15s ease;
+  }
+  .check-btn.fait{ background:var(--jaune); animation:pop .35s ease; }
+  @keyframes pop{ 0%{transform:scale(0.7);} 60%{transform:scale(1.18);} 100%{transform:scale(1);} }
+  @media (prefers-reduced-motion: reduce){ .check-btn.fait{animation:none;} }
+
+  .bravo-banner{
+    background:var(--rouge); color:var(--blanc); border:3px solid var(--encre); border-radius:var(--radius-m);
+    padding:16px 18px; font-family:'Bangers',cursive; font-size:1.3rem; text-align:center;
+    margin-bottom:16px; box-shadow:var(--ombre-bd);
+  }
+
+  /* ---------- GOALS ---------- */
+  .stars-strip{
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--encre); color:var(--blanc); border:3px solid var(--encre); border-radius:var(--radius-m);
+    padding:16px 18px; margin-bottom:18px;
+  }
+  .stars-strip .chiffre{ font-size:1.8rem; color:var(--jaune); }
+  .poster-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:14px; }
+  .poster{
+    border:3px solid var(--encre); border-radius:var(--radius-m);
+    padding:16px 12px; text-align:center; position:relative; color:var(--blanc);
+    background:linear-gradient(160deg, #B9B9B9, #8E8E8E); opacity:0.75;
+  }
+  .poster.pret{ background:linear-gradient(160deg, var(--rouge), #B4222D); opacity:1; box-shadow:var(--ombre-bd); }
+  .poster .emoji{ font-size:2rem; display:block; margin-bottom:6px; }
+  .poster .titre{ font-weight:800; font-size:0.92rem; line-height:1.2; }
+  .poster .cout{ margin-top:8px; font-size:0.78rem; font-weight:800; background:rgba(0,0,0,0.25); border-radius:999px; padding:4px 10px; display:inline-block;}
+  .poster .ruban{
+    position:absolute; top:-10px; right:-10px; background:var(--jaune); color:var(--encre);
+    font-size:0.66rem; font-family:'Bangers',cursive; padding:5px 9px; border:2px solid var(--encre);
+    border-radius:999px;
+  }
+
+  /* ---------- QG / BADGES ---------- */
+  .studio-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
+  .stat-card{ background:var(--blanc); border:3px solid var(--encre); border-radius:var(--radius-m); box-shadow:var(--ombre-bd); padding:16px; text-align:center; }
+  .stat-card .chiffre{ font-size:1.9rem; display:block; }
+  .stat-card .lbl{ font-size:0.76rem; color:var(--texte-doux); font-weight:800; }
+  .badge-shelf{ display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px; margin-bottom:18px; }
+  .badge-card{ background:var(--blanc); border:3px solid var(--encre); border-radius:var(--radius-m); padding:14px 10px; text-align:center; opacity:0.38; filter:grayscale(1); }
+  .badge-card.debloque{ opacity:1; filter:none; box-shadow:var(--ombre-bd-s); }
+  .badge-card .emoji{ font-size:1.8rem; display:block; margin-bottom:4px; }
+  .badge-card .titre{ font-size:0.76rem; font-weight:800; }
+  .semaine-bars{ display:flex; align-items:flex-end; gap:8px; height:112px; background:var(--blanc); border:3px solid var(--encre); border-radius:var(--radius-m); box-shadow:var(--ombre-bd); padding:16px; }
+  .semaine-bar-wrap{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; gap:6px; }
+  .semaine-bar{ width:100%; max-width:26px; background:var(--bleu); border:2px solid var(--encre); border-radius:5px 5px 1px 1px; transition:height .3s ease; }
+  .semaine-jour{ font-size:0.68rem; color:var(--texte-doux); font-weight:800; }
+
+  /* ---------- PARENT ---------- */
+  .gear-btn{
+    position:fixed; right:16px; bottom:16px; width:50px;height:50px;border-radius:50%;
+    background:var(--encre); color:var(--jaune); border:3px solid var(--jaune); font-size:1.3rem; cursor:pointer;
+    box-shadow:0 6px 0 rgba(0,0,0,0.3); z-index:50;
+  }
+  .voile{ position:fixed; inset:0; background:rgba(20,20,26,0.6); display:flex; align-items:center; justify-content:center; z-index:100; padding:16px; }
+  .panneau{ background:var(--blanc); border:4px solid var(--encre); border-radius:var(--radius-l); padding:22px; max-width:520px; width:100%; max-height:86vh; overflow-y:auto; }
+  .panneau h2{ margin-top:0; }
+  .champ{ margin-bottom:12px; }
+  .champ label{ display:block; font-size:0.8rem; font-weight:800; color:var(--texte-doux); margin-bottom:4px;}
+  .champ input, .champ select{ width:100%; padding:9px 10px; border-radius:var(--radius-s); border:2.5px solid var(--encre); font-family:inherit; font-size:0.95rem; background:var(--papier); }
+  .btn{ border:2.5px solid var(--encre); border-radius:999px; padding:10px 18px; font-weight:800; cursor:pointer; font-size:0.9rem; box-shadow:var(--ombre-bd-s); }
+  .btn:active{ transform:translate(2px,2px); box-shadow:0 0 0 var(--encre); }
+  .btn-jaune{ background:var(--jaune); color:var(--encre); }
+  .btn-nuit{ background:var(--nuit); color:var(--blanc); }
+  .btn-rouge{ background:var(--rouge); color:var(--blanc); }
+  .btn-fantome{ background:transparent; border-color:transparent; box-shadow:none; color:var(--texte-doux); text-decoration:underline; }
+  .row-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .onglets-parent{ display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
+  .onglet-parent{ border:2.5px solid var(--encre); padding:8px 14px; border-radius:999px; cursor:pointer; background:var(--papier-fonce); font-weight:800; font-size:0.85rem; }
+  .onglet-parent.actif{ background:var(--nuit); color:var(--blanc); }
+  .liste-item{ display:flex; align-items:center; gap:8px; padding:8px 0; border-top:2px solid #EFE6D2; }
+  .liste-item:first-of-type{ border-top:none; }
+  .liste-item .em{ font-size:1.2rem; width:26px;}
+  .liste-item .txt{ flex:1; font-weight:800; font-size:0.9rem;}
+  .liste-item .meta{ font-size:0.75rem; color:var(--texte-doux); margin-right:6px;}
+  .switch{ width:38px; height:22px; border-radius:999px; background:#DDD2B4; position:relative; cursor:pointer; border:2px solid var(--encre); flex:none; }
+  .switch.on{ background:var(--vert); }
+  .switch .pastille{ position:absolute; top:1px; left:1px; width:16px;height:16px;border-radius:50%; background:var(--blanc); transition:left .15s ease; }
+  .switch.on .pastille{ left:17px; }
+  .icon-btn{ border:none; background:transparent; cursor:pointer; font-size:1rem; padding:4px;}
+  .gate{ text-align:center; }
+  .gate .chiffre{ font-size:1.4rem; margin:14px 0; }
+  .gate input{ width:80px; text-align:center; font-size:1.2rem; padding:8px; border-radius:var(--radius-s); border:2.5px solid var(--encre); }
+  .footer-note{ text-align:center; font-size:0.72rem; color:var(--texte-doux); margin:22px 0 6px 0; }
+
+  @media (max-width:480px){
+    .studio-grid{ grid-template-columns:1fr; }
+    .marquee h1{ font-size:1.7rem; }
+    .burst-badge{ width:76px; height:76px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="marquee">
+  <div class="marquee-top">
+    <div>
+      <h1>LE QUARTIER GÉNÉRAL DES HÉROS</h1>
+      <p class="souscritre">Missions secrètes, super-pouvoirs à la maison</p>
+    </div>
+    <div class="burst-badge" id="niveauBadge"><span>Niveau 1</span></div>
+  </div>
+  <div class="nav-pills">
+    <button class="nav-pill actif" data-vue="accueil">Aujourd'hui</button>
+    <button class="nav-pill" data-vue="objectifs">Mes récompenses</button>
+    <button class="nav-pill" data-vue="studio">Mon QG</button>
+  </div>
+</div>
+
+<div class="ecran" id="ecran"></div>
+
+<button class="gear-btn" id="gearBtn" title="Espace parents" aria-label="Espace parents">⚙️</button>
+
+<div id="modalZone"></div>
+
+<script type="application/json" id="defaultData">
+{
+  "categories":[
+    {"id":"chambre","label":"Mon repaire","tagline":"Un super-héros garde sa base bien rangée","color":"#E63946"},
+    {"id":"maison","label":"Mission Maison","tagline":"On aide toute l'équipe à la maison","color":"#FB8B24"},
+    {"id":"champagne","label":"Mission Champagne","tagline":"Un vrai héros protège les plus petits que lui","color":"#2A9D8F"},
+    {"id":"ecoute","label":"Super Écoute","tagline":"Écouter du premier coup, c'est un super-pouvoir","color":"#457B9D"},
+    {"id":"calme","label":"Pouvoir du Calme","tagline":"Le vrai courage, c'est de rester calme","color":"#7B5EA7"},
+    {"id":"moi","label":"Entraînement de héros","tagline":"Je deviens autonome, jour après jour","color":"#C9A400"}
+  ],
+  "tasks":[
+    {"id":"t1","category":"chambre","label":"Ranger ses jouets","emoji":"🧸","points":1,"active":true},
+    {"id":"t2","category":"chambre","label":"Ranger le bazar qu'on a mis","emoji":"🌀","points":2,"active":true},
+    {"id":"t3","category":"chambre","label":"Faire son lit","emoji":"🛏️","points":2,"active":false},
+    {"id":"t4","category":"chambre","label":"Plier ses vêtements","emoji":"👕","points":2,"active":false},
+    {"id":"t5","category":"chambre","label":"Ranger ses livres","emoji":"📚","points":1,"active":false},
+    {"id":"t6","category":"maison","label":"Mettre la table","emoji":"🍽️","points":2,"active":true},
+    {"id":"t7","category":"maison","label":"Débarrasser son assiette","emoji":"🥣","points":1,"active":true},
+    {"id":"t8","category":"maison","label":"Essuyer la table","emoji":"🧽","points":1,"active":false},
+    {"id":"t9","category":"maison","label":"Trier les déchets","emoji":"♻️","points":2,"active":false},
+    {"id":"t10","category":"maison","label":"Arroser une plante","emoji":"🌱","points":1,"active":false},
+    {"id":"t11","category":"champagne","label":"Être doux avec Champagne","emoji":"🐾","points":2,"active":true},
+    {"id":"t12","category":"champagne","label":"Donner à manger à Champagne","emoji":"🍖","points":2,"active":true},
+    {"id":"t13","category":"champagne","label":"Remplir sa gamelle d'eau","emoji":"💧","points":1,"active":false},
+    {"id":"t14","category":"champagne","label":"Laisser Champagne tranquille quand elle se repose","emoji":"😴","points":2,"active":false},
+    {"id":"t15","category":"champagne","label":"La caresser doucement, sans tirer","emoji":"🤲","points":1,"active":false},
+    {"id":"t16","category":"ecoute","label":"Écouter du premier coup","emoji":"👂","points":2,"active":true},
+    {"id":"t17","category":"ecoute","label":"Écouter sans couper la parole","emoji":"🤫","points":1,"active":true},
+    {"id":"t18","category":"ecoute","label":"Répondre sans discuter","emoji":"✅","points":1,"active":false},
+    {"id":"t19","category":"ecoute","label":"Respecter les règles de la maison","emoji":"📜","points":2,"active":false},
+    {"id":"t20","category":"ecoute","label":"Ranger quand on me le demande","emoji":"🙌","points":1,"active":false},
+    {"id":"t21","category":"calme","label":"Accepter un \"non\" sans caprice","emoji":"🛡️","points":3,"active":true},
+    {"id":"t22","category":"calme","label":"Respirer un grand coup au lieu de crier","emoji":"🌬️","points":2,"active":true},
+    {"id":"t23","category":"calme","label":"Dire ce que je ressens avec des mots","emoji":"💬","points":2,"active":false},
+    {"id":"t24","category":"calme","label":"Me calmer tout seul dans mon coin calme","emoji":"🧘","points":2,"active":false},
+    {"id":"t25","category":"calme","label":"Demander poliment au lieu de réclamer","emoji":"🙏","points":1,"active":false},
+    {"id":"t26","category":"moi","label":"Se brosser les dents","emoji":"🪥","points":1,"active":true},
+    {"id":"t27","category":"moi","label":"S'habiller tout seul","emoji":"🦸","points":2,"active":true},
+    {"id":"t28","category":"moi","label":"Se laver les mains","emoji":"🧼","points":1,"active":false},
+    {"id":"t29","category":"moi","label":"Ranger son sac d'école","emoji":"🎒","points":1,"active":false}
+  ],
+  "rewards":[
+    {"id":"r1","label":"Choisir l'histoire du soir","emoji":"📖","cost":5},
+    {"id":"r2","label":"Choisir la musique dans la voiture","emoji":"🎵","cost":4},
+    {"id":"r3","label":"15 minutes d'écran en plus","emoji":"📺","cost":8},
+    {"id":"r4","label":"30 minutes d'écran en plus","emoji":"📺","cost":15},
+    {"id":"r5","label":"Un dessert spécial","emoji":"🍨","cost":10},
+    {"id":"r6","label":"Choisir le menu d'un repas","emoji":"🍝","cost":12},
+    {"id":"r7","label":"Se coucher 15 minutes plus tard","emoji":"🌙","cost":8},
+    {"id":"r8","label":"Se lever 20 minutes plus tard un week-end","emoji":"⏰","cost":10},
+    {"id":"r9","label":"Un moment jeu de société en famille","emoji":"🎲","cost":8},
+    {"id":"r10","label":"Faire un gâteau ensemble","emoji":"🎂","cost":12},
+    {"id":"r11","label":"Pique-nique dans le salon","emoji":"🧺","cost":10},
+    {"id":"r12","label":"Sortie au parc","emoji":"🌳","cost":15},
+    {"id":"r13","label":"Sortie à vélo","emoji":"🚲","cost":15},
+    {"id":"r14","label":"Chasse au trésor à la maison","emoji":"🗺️","cost":15},
+    {"id":"r15","label":"Soirée pyjama avec papa","emoji":"🛌","cost":18},
+    {"id":"r16","label":"Une carte Joker anti-corvée","emoji":"🃏","cost":20},
+    {"id":"r17","label":"Inviter un copain à la maison","emoji":"🎉","cost":20},
+    {"id":"r18","label":"Baignade ou piscine","emoji":"🏊","cost":20},
+    {"id":"r19","label":"Un livre neuf","emoji":"📗","cost":20},
+    {"id":"r20","label":"Une tenue de super-héros (cape et masque)","emoji":"🦸","cost":25},
+    {"id":"r21","label":"Un petit jouet surprise","emoji":"🎁","cost":25},
+    {"id":"r22","label":"Choisir un jouet ensemble au magasin","emoji":"🛍️","cost":30},
+    {"id":"r23","label":"Sortie au cinéma","emoji":"🎬","cost":30},
+    {"id":"r24","label":"Sortie au restaurant au choix","emoji":"🍽️","cost":35},
+    {"id":"r25","label":"Une grande sortie (parc d'attractions, accrobranche...)","emoji":"🎢","cost":40}
+  ],
+  "badges":[
+    {"id":"exploit","label":"Premier Exploit","emoji":"💥","desc":"Terminer toutes les missions d'une journée","type":"fullday","value":1},
+    {"id":"semaine","label":"Semaine Héroïque","emoji":"🦸","desc":"7 jours d'affilée, au moins la moitié des missions","type":"streak","value":7},
+    {"id":"confirme","label":"Héros Confirmé","emoji":"⚡","desc":"50 éclairs gagnés","type":"stars","value":50},
+    {"id":"legende","label":"Légende du Quartier","emoji":"🌟","desc":"200 éclairs gagnés","type":"stars","value":200},
+    {"id":"amichampagne","label":"Meilleur Ami de Champagne","emoji":"🐾","desc":"15 missions Champagne réussies","type":"category","value":15,"category":"champagne"},
+    {"id":"maitrecalme","label":"Maître de son Calme","emoji":"🧘","desc":"15 missions du Pouvoir du Calme réussies","type":"category","value":15,"category":"calme"}
+  ],
+  "levels":["Apprenti héros","Héros en formation","Héros confirmé","Super-héros","Légende du quartier"]
+}
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "quartier_general_heros_data_v1";
+  var vueActuelle = "accueil";
+  var ongletParentActuel = "missions";
+
+  // ---------- DATA LOAD ----------
+  function fusionnerNouvellesRecompenses(d){
+    var defautsBruts = JSON.parse(document.getElementById("defaultData").textContent);
+    var idsExistants = {};
+    for(var i=0;i<d.rewards.length;i++){ idsExistants[d.rewards[i].id] = true; }
+    for(var j=0;j<defautsBruts.rewards.length;j++){
+      var r = defautsBruts.rewards[j];
+      if(!idsExistants[r.id]){ d.rewards.push(r); }
+    }
+    if(!d.nextRewardNum || d.nextRewardNum < 26) d.nextRewardNum = 26;
+    return d;
+  }
+
+  function chargerDonnees(){
+    var brut = null;
+    try{ brut = localStorage.getItem(STORAGE_KEY); }catch(e){ brut = null; }
+    if(brut){
+      try{
+        var existant = JSON.parse(brut);
+        return fusionnerNouvellesRecompenses(existant);
+      }catch(e){ /* fall through to defaults */ }
+    }
+    var defaut = JSON.parse(document.getElementById("defaultData").textContent);
+    defaut.completions = {};
+    defaut.redemptions = [];
+    defaut.nextTaskNum = 30;
+    defaut.nextRewardNum = 26;
+    return defaut;
+  }
+
+  var data = chargerDonnees();
+
+  function sauvegarder(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){ /* stockage indisponible */ }
+  }
+
+  function todayKey(){
+    var d = new Date();
+    var m = d.getMonth()+1;
+    var day = d.getDate();
+    return d.getFullYear() + "-" + (m<10?"0"+m:m) + "-" + (day<10?"0"+day:day);
+  }
+
+  function dateKeyOffset(offsetDays){
+    var d = new Date();
+    d.setDate(d.getDate()+offsetDays);
+    var m = d.getMonth()+1;
+    var day = d.getDate();
+    return d.getFullYear() + "-" + (m<10?"0"+m:m) + "-" + (day<10?"0"+day:day);
+  }
+
+  function joursCourts(offsetDays){
+    var noms = ["dim","lun","mar","mer","jeu","ven","sam"];
+    var d = new Date();
+    d.setDate(d.getDate()+offsetDays);
+    return noms[d.getDay()];
+  }
+
+  // ---------- HELPERS DATA ----------
+  function getCategorie(id){
+    for(var i=0;i<data.categories.length;i++){ if(data.categories[i].id===id) return data.categories[i]; }
+    return null;
+  }
+  function tachesActives(){
+    var out=[];
+    for(var i=0;i<data.tasks.length;i++){ if(data.tasks[i].active) out.push(data.tasks[i]); }
+    return out;
+  }
+  function estFaite(taskId, dateKey){
+    dateKey = dateKey || todayKey();
+    return !!(data.completions[dateKey] && data.completions[dateKey][taskId]);
+  }
+  function basculerTache(taskId){
+    var dk = todayKey();
+    if(!data.completions[dk]) data.completions[dk] = {};
+    if(data.completions[dk][taskId]){
+      delete data.completions[dk][taskId];
+    } else {
+      data.completions[dk][taskId] = true;
+    }
+    sauvegarder();
+  }
+
+  function totalEtoilesGagnees(){
+    var total = 0;
+    for(var dk in data.completions){
+      if(!data.completions.hasOwnProperty(dk)) continue;
+      for(var tid in data.completions[dk]){
+        if(!data.completions[dk].hasOwnProperty(tid)) continue;
+        if(!data.completions[dk][tid]) continue;
+        var t = null;
+        for(var i=0;i<data.tasks.length;i++){ if(data.tasks[i].id===tid){ t=data.tasks[i]; break; } }
+        if(t) total += t.points;
+      }
+    }
+    return total;
+  }
+
+  function etoilesDepensees(){
+    var total = 0;
+    for(var i=0;i<data.redemptions.length;i++){ total += data.redemptions[i].cost; }
+    return total;
+  }
+
+  function etoilesDisponibles(){
+    return totalEtoilesGagnees() - etoilesDepensees();
+  }
+
+  function etoilesAujourdhui(){
+    var dk = todayKey();
+    var total = 0;
+    if(!data.completions[dk]) return 0;
+    for(var tid in data.completions[dk]){
+      if(!data.completions[dk].hasOwnProperty(tid)) continue;
+      if(!data.completions[dk][tid]) continue;
+      var t=null;
+      for(var i=0;i<data.tasks.length;i++){ if(data.tasks[i].id===tid){ t=data.tasks[i]; break; } }
+      if(t) total += t.points;
+    }
+    return total;
+  }
+
+  function maxEtoilesAujourdhui(){
+    var actives = tachesActives();
+    var total=0;
+    for(var i=0;i<actives.length;i++) total+=actives[i].points;
+    return total;
+  }
+
+  function comptageJour(dateKey){
+    if(!data.completions[dateKey]) return 0;
+    var n=0;
+    for(var tid in data.completions[dateKey]){
+      if(data.completions[dateKey].hasOwnProperty(tid) && data.completions[dateKey][tid]) n++;
+    }
+    return n;
+  }
+
+  function calculerStreak(){
+    var actives = tachesActives().length;
+    if(actives===0) return 0;
+    var seuil = Math.ceil(actives/2);
+    var streak = 0;
+    var offset = 0;
+    while(true){
+      var dk = dateKeyOffset(-offset);
+      var n = comptageJour(dk);
+      if(n>=seuil){ streak++; offset++; }
+      else if(offset===0){ offset++; continue; }
+      else { break; }
+    }
+    return streak;
+  }
+
+  function journeeComplete(dateKey){
+    dateKey = dateKey || todayKey();
+    var actives = tachesActives();
+    if(actives.length===0) return false;
+    for(var i=0;i<actives.length;i++){
+      if(!estFaite(actives[i].id, dateKey)) return false;
+    }
+    return true;
+  }
+
+  function comptageCategorieTotal(catId){
+    var total=0;
+    for(var dk in data.completions){
+      if(!data.completions.hasOwnProperty(dk)) continue;
+      for(var tid in data.completions[dk]){
+        if(!data.completions[dk].hasOwnProperty(tid) || !data.completions[dk][tid]) continue;
+        var t=null;
+        for(var i=0;i<data.tasks.length;i++){ if(data.tasks[i].id===tid){ t=data.tasks[i]; break; } }
+        if(t && t.category===catId) total++;
+      }
+    }
+    return total;
+  }
+
+  function badgeDebloque(badge){
+    if(badge.type==="fullday"){
+      for(var dk in data.completions){ if(data.completions.hasOwnProperty(dk) && journeeComplete(dk)) return true; }
+      return false;
+    }
+    if(badge.type==="streak"){ return calculerStreak() >= badge.value; }
+    if(badge.type==="stars"){ return totalEtoilesGagnees() >= badge.value; }
+    if(badge.type==="category"){ return comptageCategorieTotal(badge.category) >= badge.value; }
+    return false;
+  }
+
+  function niveauActuel(){
+    var idx = Math.floor(totalEtoilesGagnees()/20);
+    if(idx > data.levels.length-1) idx = data.levels.length-1;
+    return {num: idx+1, titre: data.levels[idx]};
+  }
+
+  function genId(prefix, counterField){
+    var n = data[counterField];
+    data[counterField] = n+1;
+    return prefix + n;
+  }
+
+  // ---------- RENDU ----------
+  function el(tag, attrs, enfants){
+    var e = document.createElement(tag);
+    attrs = attrs || {};
+    for(var k in attrs){
+      if(!attrs.hasOwnProperty(k)) continue;
+      if(k==="class") e.className = attrs[k];
+      else if(k==="html") e.innerHTML = attrs[k];
+      else if(k.indexOf("data-")===0) e.setAttribute(k, attrs[k]);
+      else e[k] = attrs[k];
+    }
+    enfants = enfants || [];
+    for(var i=0;i<enfants.length;i++){ if(enfants[i]) e.appendChild(enfants[i]); }
+    return e;
+  }
+  function txt(s){ return document.createTextNode(s); }
+
+  function render(){
+    var niv = niveauActuel();
+    document.getElementById("niveauBadge").innerHTML = "";
+    document.getElementById("niveauBadge").appendChild(el("span",{},[txt("Niveau "+niv.num), document.createElement("br"), txt(niv.titre)]));
+    var pills = document.querySelectorAll(".nav-pill");
+    for(var i=0;i<pills.length;i++){
+      pills[i].className = "nav-pill" + (pills[i].getAttribute("data-vue")===vueActuelle ? " actif" : "");
+    }
+    var ecran = document.getElementById("ecran");
+    ecran.innerHTML = "";
+    if(vueActuelle==="accueil") ecran.appendChild(vueAccueil());
+    else if(vueActuelle==="objectifs") ecran.appendChild(vueObjectifs());
+    else if(vueActuelle==="studio") ecran.appendChild(vueStudio());
+    ecran.appendChild(el("div",{class:"footer-note"},[txt("Inspiré des principes Montessori (autonomie, vie pratique, respect du vivant) et de la discipline positive (bienveillance, calme, encouragement).")]));
+  }
+
+  function vueAccueil(){
+    var frag = el("div",{});
+    frag.appendChild(el("div",{class:"intro-card"},[
+      el("b",{},[txt("Aujourd'hui : ")]),
+      txt("coche chaque mission réussie. Chaque éclair gagné t'aide à débloquer tes récompenses !")
+    ]));
+
+    var pct = maxEtoilesAujourdhui()>0 ? Math.round((etoilesAujourdhui()/maxEtoilesAujourdhui())*100) : 0;
+    var dialWrap = el("div",{class:"dial-wrap"});
+    var dial = el("div",{class:"dial", style:"--pct:"+pct});
+    dial.appendChild(el("div",{class:"dial-fill"}));
+    dial.appendChild(el("div",{class:"dial-txt"},[
+      el("span",{class:"chiffre"},[txt(etoilesAujourdhui()+"/"+maxEtoilesAujourdhui())]),
+      el("span",{class:"lbl"},[txt("⚡ éclairs aujourd'hui")])
+    ]));
+    dialWrap.appendChild(dial);
+    frag.appendChild(dialWrap);
+
+    if(journeeComplete() && maxEtoilesAujourdhui()>0){
+      frag.appendChild(el("div",{class:"bravo-banner"},[txt("💥 BOUM ! Toutes les missions du jour sont réussies !")]));
+    }
+
+    for(var c=0;c<data.categories.length;c++){
+      var cat = data.categories[c];
+      var tachesCat = [];
+      for(var i=0;i<data.tasks.length;i++){ if(data.tasks[i].category===cat.id && data.tasks[i].active) tachesCat.push(data.tasks[i]); }
+      if(tachesCat.length===0) continue;
+      var card = el("div",{class:"cat-card"});
+      card.appendChild(el("div",{class:"cat-head", style:"--c:"+cat.color},[
+        el("h2",{},[txt(cat.label)]),
+        el("p",{},[txt(cat.tagline)])
+      ]));
+      for(var j=0;j<tachesCat.length;j++){
+        (function(t){
+          var fait = estFaite(t.id);
+          var row = el("div",{class:"tache-row"});
+          row.appendChild(el("div",{class:"tache-emoji"},[txt(t.emoji)]));
+          row.appendChild(el("div",{class:"tache-label"},[txt(t.label)]));
+          row.appendChild(el("div",{class:"tache-pts"},[txt("+"+t.points+" ⚡")]));
+          var btn = el("button",{class:"check-btn"+(fait?" fait":""), "aria-label":"Marquer "+t.label}, [txt(fait?"✓":"")]);
+          btn.addEventListener("click", function(){
+            basculerTache(t.id);
+            render();
+          });
+          row.appendChild(btn);
+          card.appendChild(row);
+        })(tachesCat[j]);
+      }
+      frag.appendChild(card);
+    }
+
+    if(tachesActives().length===0){
+      frag.appendChild(el("div",{class:"intro-card"},[txt("Aucune mission n'est activée pour le moment. Un grand peut en activer depuis l'espace parents (⚙️ en bas à droite).")]));
+    }
+    return frag;
+  }
+
+  function vueObjectifs(){
+    var frag = el("div",{});
+    var strip = el("div",{class:"stars-strip"},[
+      el("div",{},[
+        el("span",{class:"chiffre"},[txt(String(etoilesDisponibles()))]),
+        el("div",{style:"font-size:0.78rem;opacity:0.85;"},[txt("éclairs disponibles")])
+      ]),
+      el("div",{style:"font-size:2rem;"},[txt("⚡")])
+    ]);
+    frag.appendChild(strip);
+    frag.appendChild(el("div",{class:"intro-card"},[txt("Quand une carte s'allume en rouge, tu as assez d'éclairs ! Demande à un grand de te l'offrir depuis l'espace parents.")]));
+    var grid = el("div",{class:"poster-grid"});
+    var dispo = etoilesDisponibles();
+    for(var i=0;i<data.rewards.length;i++){
+      var r = data.rewards[i];
+      var pret = dispo >= r.cost;
+      var poster = el("div",{class:"poster"+(pret?" pret":"")});
+      if(pret) poster.appendChild(el("div",{class:"ruban"},[txt("Prêt !")]));
+      poster.appendChild(el("span",{class:"emoji"},[txt(r.emoji)]));
+      poster.appendChild(el("div",{class:"titre"},[txt(r.label)]));
+      poster.appendChild(el("div",{class:"cout"},[txt(r.cost+" ⚡")]));
+      grid.appendChild(poster);
+    }
+    frag.appendChild(grid);
+    return frag;
+  }
+
+  function vueStudio(){
+    var frag = el("div",{});
+    var grid = el("div",{class:"studio-grid"});
+    grid.appendChild(el("div",{class:"stat-card"},[
+      el("span",{class:"chiffre"},[txt(String(totalEtoilesGagnees()))]),
+      el("div",{class:"lbl"},[txt("éclairs gagnés au total")])
+    ]));
+    grid.appendChild(el("div",{class:"stat-card"},[
+      el("span",{class:"chiffre"},[txt(String(calculerStreak()))]),
+      el("div",{class:"lbl"},[txt("jours d'affilée 🦸")])
+    ]));
+    frag.appendChild(grid);
+
+    frag.appendChild(el("h2",{style:"margin:6px 0 10px 4px;font-size:1.25rem;"},[txt("Vitrine des super-badges")]));
+    var shelf = el("div",{class:"badge-shelf"});
+    for(var i=0;i<data.badges.length;i++){
+      var b = data.badges[i];
+      var deb = badgeDebloque(b);
+      var card = el("div",{class:"badge-card"+(deb?" debloque":"")});
+      card.appendChild(el("span",{class:"emoji"},[txt(b.emoji)]));
+      card.appendChild(el("div",{class:"titre"},[txt(b.label)]));
+      shelf.appendChild(card);
+    }
+    frag.appendChild(shelf);
+
+    frag.appendChild(el("h2",{style:"margin:6px 0 10px 4px;font-size:1.25rem;"},[txt("Cette semaine")]));
+    var bars = el("div",{class:"semaine-bars"});
+    for(var off=6; off>=0; off--){
+      var dk = dateKeyOffset(-off);
+      var n = comptageJour(dk);
+      var refMax = tachesActives().length || 1;
+      var hauteur = Math.min(100, Math.round((n/refMax)*100));
+      var wrap = el("div",{class:"semaine-bar-wrap"});
+      wrap.appendChild(el("div",{class:"semaine-bar", style:"height:"+Math.max(hauteur,4)+"%;"}));
+      wrap.appendChild(el("div",{class:"semaine-jour"},[txt(joursCourts(-off))]));
+      bars.appendChild(wrap);
+    }
+    frag.appendChild(bars);
+    return frag;
+  }
+
+  // ---------- NAVIGATION ----------
+  var pillsInit = document.querySelectorAll(".nav-pill");
+  for(var p=0;p<pillsInit.length;p++){
+    pillsInit[p].addEventListener("click", function(ev){
+      vueActuelle = ev.currentTarget.getAttribute("data-vue");
+      render();
+    });
+  }
+
+  // ---------- ESPACE PARENTS ----------
+  var modalZone = document.getElementById("modalZone");
+
+  function fermerModal(){ modalZone.innerHTML = ""; }
+
+  document.getElementById("gearBtn").addEventListener("click", function(){
+    ouvrirPortail();
+  });
+
+  function ouvrirPortail(){
+    var a = Math.floor(Math.random()*8)+3;
+    var b = Math.floor(Math.random()*8)+2;
+    var voile = el("div",{class:"voile"});
+    var panneau = el("div",{class:"panneau gate"});
+    panneau.appendChild(el("h2",{},[txt("Espace parents")]));
+    panneau.appendChild(el("p",{},[txt("Petit calcul pour continuer :")]));
+    panneau.appendChild(el("div",{class:"chiffre"},[txt(a+" + "+b+" = ?")]));
+    var input = el("input",{type:"number", inputMode:"numeric"});
+    panneau.appendChild(input);
+    var msg = el("div",{style:"color:var(--rouge);font-size:0.85rem;margin-top:8px;min-height:18px;font-weight:700;"});
+    panneau.appendChild(msg);
+    var actions = el("div",{class:"row-actions", style:"justify-content:center;"});
+    var okBtn = el("button",{class:"btn btn-jaune"},[txt("Valider")]);
+    okBtn.addEventListener("click", function(){
+      if(parseInt(input.value,10) === a+b){
+        fermerModal();
+        ouvrirPanneauParent();
+      } else {
+        msg.textContent = "Pas tout à fait, réessaie.";
+      }
+    });
+    var cancelBtn = el("button",{class:"btn btn-fantome"},[txt("Annuler")]);
+    cancelBtn.addEventListener("click", fermerModal);
+    actions.appendChild(okBtn);
+    actions.appendChild(cancelBtn);
+    panneau.appendChild(actions);
+    voile.appendChild(panneau);
+    modalZone.appendChild(voile);
+    input.focus();
+  }
+
+  function ouvrirPanneauParent(){
+    var voile = el("div",{class:"voile"});
+    var panneau = el("div",{class:"panneau"});
+    panneau.appendChild(el("h2",{},[txt("Espace parents")]));
+    var onglets = el("div",{class:"onglets-parent"});
+    var noms = [["missions","Missions"],["recompenses","Récompenses"],["donnees","Données"]];
+    for(var i=0;i<noms.length;i++){
+      (function(id,label){
+        var o = el("button",{class:"onglet-parent"+(ongletParentActuel===id?" actif":"")},[txt(label)]);
+        o.addEventListener("click", function(){ ongletParentActuel=id; rafraichirPanneau(); });
+        onglets.appendChild(o);
+      })(noms[i][0], noms[i][1]);
+    }
+    panneau.appendChild(onglets);
+    var contenu = el("div",{id:"contenuParent"});
+    panneau.appendChild(contenu);
+    var fermer = el("button",{class:"btn btn-nuit", style:"margin-top:16px;"},[txt("Fermer")]);
+    fermer.addEventListener("click", function(){ fermerModal(); render(); });
+    panneau.appendChild(fermer);
+    voile.appendChild(panneau);
+    modalZone.innerHTML = "";
+    modalZone.appendChild(voile);
+
+    function rafraichirPanneau(){
+      var ongl = panneau.querySelectorAll(".onglet-parent");
+      var nomsMap = {missions:"Missions",recompenses:"Récompenses",donnees:"Données"};
+      for(var j=0;j<ongl.length;j++){ ongl[j].className = "onglet-parent"+(ongl[j].textContent===nomsMap[ongletParentActuel]?" actif":""); }
+      contenu.innerHTML = "";
+      if(ongletParentActuel==="missions") contenu.appendChild(panneauMissions());
+      else if(ongletParentActuel==="recompenses") contenu.appendChild(panneauRecompenses());
+      else contenu.appendChild(panneauDonnees());
+    }
+    rafraichirPanneau();
+  }
+
+  function panneauMissions(){
+    var frag = el("div",{});
+    for(var i=0;i<data.tasks.length;i++){
+      (function(t){
+        var cat = getCategorie(t.category);
+        var item = el("div",{class:"liste-item"});
+        item.appendChild(el("div",{class:"em"},[txt(t.emoji)]));
+        item.appendChild(el("div",{class:"txt"},[txt(t.label)]));
+        item.appendChild(el("div",{class:"meta"},[txt((cat?cat.label:"")+" · "+t.points+"⚡")]));
+        var sw = el("button",{class:"switch"+(t.active?" on":"")},[el("span",{class:"pastille"},[])]);
+        sw.addEventListener("click", function(){ t.active = !t.active; sauvegarder(); sw.className = "switch"+(t.active?" on":""); });
+        item.appendChild(sw);
+        var del = el("button",{class:"icon-btn", title:"Supprimer"},[txt("🗑")]);
+        del.addEventListener("click", function(){
+          if(confirm("Supprimer la mission \""+t.label+"\" ?")){
+            data.tasks = data.tasks.filter(function(x){ return x.id!==t.id; });
+            sauvegarder();
+            item.remove();
+          }
+        });
+        item.appendChild(del);
+        frag.appendChild(item);
+      })(data.tasks[i]);
+    }
+
+    var form = el("div",{style:"margin-top:16px;padding-top:14px;border-top:2px dashed var(--encre);"});
+    form.appendChild(el("h3",{style:"margin:0 0 10px 0;font-size:1.1rem;"},[txt("Ajouter une mission")]));
+    var champLabel = champTexte("Nom de la mission", "ex : Nourrir le poisson");
+    var champEmoji = champTexte("Emoji", "🙂");
+    var champCat = el("div",{class:"champ"},[el("label",{},[txt("Catégorie")])]);
+    var selectCat = el("select",{});
+    for(var c=0;c<data.categories.length;c++){ selectCat.appendChild(el("option",{value:data.categories[c].id},[txt(data.categories[c].label)])); }
+    champCat.appendChild(selectCat);
+    var champPts = el("div",{class:"champ"},[el("label",{},[txt("Points")])]);
+    var selectPts = el("select",{});
+    selectPts.appendChild(el("option",{value:"1"},[txt("1 ⚡ (petite mission)")]));
+    selectPts.appendChild(el("option",{value:"2"},[txt("2 ⚡ (mission moyenne)")]));
+    selectPts.appendChild(el("option",{value:"3"},[txt("3 ⚡ (grande mission)")]));
+    champPts.appendChild(selectPts);
+    form.appendChild(champLabel.wrap);
+    form.appendChild(champEmoji.wrap);
+    form.appendChild(champCat);
+    form.appendChild(champPts);
+    var addBtn = el("button",{class:"btn btn-jaune"},[txt("+ Ajouter")]);
+    addBtn.addEventListener("click", function(){
+      var label = champLabel.input.value.trim();
+      if(!label){ champLabel.input.focus(); return; }
+      var emoji = champEmoji.input.value.trim() || "⚡";
+      var newTask = {
+        id: genId("t", "nextTaskNum"),
+        category: selectCat.value,
+        label: label,
+        emoji: emoji,
+        points: parseInt(selectPts.value,10),
+        active: true
+      };
+      data.tasks.push(newTask);
+      sauvegarder();
+      ouvrirPanneauParent();
+    });
+    form.appendChild(addBtn);
+    frag.appendChild(form);
+    return frag;
+  }
+
+  function panneauRecompenses(){
+    var frag = el("div",{});
+    frag.appendChild(el("p",{style:"font-size:0.85rem;color:var(--texte-doux);margin-top:0;font-weight:700;"},[
+      txt("Éclairs disponibles : "+etoilesDisponibles()+" ⚡")
+    ]));
+    for(var i=0;i<data.rewards.length;i++){
+      (function(r){
+        var item = el("div",{class:"liste-item"});
+        item.appendChild(el("div",{class:"em"},[txt(r.emoji)]));
+        item.appendChild(el("div",{class:"txt"},[txt(r.label)]));
+        item.appendChild(el("div",{class:"meta"},[txt(r.cost+"⚡")]));
+        var peutOffrir = etoilesDisponibles() >= r.cost;
+        var offrirBtn = el("button",{class:"btn btn-rouge", style:"font-size:0.78rem;padding:7px 12px;"+(peutOffrir?"":"opacity:0.4;cursor:not-allowed;")},[txt("Offrir")]);
+        offrirBtn.addEventListener("click", function(){
+          if(!peutOffrir) return;
+          data.redemptions.push({rewardId:r.id, cost:r.cost, date: todayKey()});
+          sauvegarder();
+          ouvrirPanneauParent();
+        });
+        item.appendChild(offrirBtn);
+        var del = el("button",{class:"icon-btn", title:"Supprimer"},[txt("🗑")]);
+        del.addEventListener("click", function(){
+          if(confirm("Supprimer la récompense \""+r.label+"\" ?")){
+            data.rewards = data.rewards.filter(function(x){ return x.id!==r.id; });
+            sauvegarder();
+            item.remove();
+          }
+        });
+        item.appendChild(del);
+        frag.appendChild(item);
+      })(data.rewards[i]);
+    }
+    var form = el("div",{style:"margin-top:16px;padding-top:14px;border-top:2px dashed var(--encre);"});
+    form.appendChild(el("h3",{style:"margin:0 0 10px 0;font-size:1.1rem;"},[txt("Ajouter une récompense")]));
+    var champLabel = champTexte("Nom de la récompense", "ex : Piscine le week-end");
+    var champEmoji = champTexte("Emoji", "🎁");
+    var champCout = champTexte("Coût en éclairs", "10", "number");
+    form.appendChild(champLabel.wrap);
+    form.appendChild(champEmoji.wrap);
+    form.appendChild(champCout.wrap);
+    var addBtn = el("button",{class:"btn btn-jaune"},[txt("+ Ajouter")]);
+    addBtn.addEventListener("click", function(){
+      var label = champLabel.input.value.trim();
+      var cout = parseInt(champCout.input.value,10);
+      if(!label || !cout || cout<1){ champLabel.input.focus(); return; }
+      data.rewards.push({ id: genId("r","nextRewardNum"), label:label, emoji: champEmoji.input.value.trim()||"🎁", cost: cout });
+      sauvegarder();
+      ouvrirPanneauParent();
+    });
+    form.appendChild(addBtn);
+    frag.appendChild(form);
+    return frag;
+  }
+
+  function panneauDonnees(){
+    var frag = el("div",{});
+    frag.appendChild(el("p",{style:"font-size:0.85rem;color:var(--texte-doux);"},[txt("Sauvegarder ou restaurer les données de l'application (utile pour changer d'appareil).")]));
+    var actions = el("div",{class:"row-actions"});
+    var exportBtn = el("button",{class:"btn btn-nuit"},[txt("⬇️ Exporter")]);
+    exportBtn.addEventListener("click", function(){
+      var blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = "quartier-general-heros-sauvegarde.json";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+    var importInput = el("input",{type:"file", accept:"application/json", style:"display:none;"});
+    importInput.addEventListener("change", function(ev){
+      var file = ev.target.files[0];
+      if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(){
+        try{
+          var nouvelles = JSON.parse(reader.result);
+          if(confirm("Remplacer toutes les données actuelles par ce fichier ?")){
+            data = nouvelles;
+            sauvegarder();
+            ouvrirPanneauParent();
+          }
+        }catch(e){ alert("Fichier invalide."); }
+      };
+      reader.readAsText(file);
+    });
+    var importBtn = el("button",{class:"btn btn-fantome"},[txt("⬆️ Importer un fichier")]);
+    importBtn.addEventListener("click", function(){ importInput.click(); });
+    actions.appendChild(exportBtn);
+    actions.appendChild(importBtn);
+    frag.appendChild(actions);
+    frag.appendChild(importInput);
+
+    var dangerZone = el("div",{style:"margin-top:20px;padding-top:14px;border-top:2px dashed var(--encre);"});
+    dangerZone.appendChild(el("h3",{style:"margin:0 0 10px 0;font-size:1.1rem;color:var(--rouge);"},[txt("Zone sensible")]));
+    var resetBtn = el("button",{class:"btn btn-rouge"},[txt("Réinitialiser toutes les données")]);
+    resetBtn.addEventListener("click", function(){
+      if(confirm("Cela efface toutes les missions cochées, éclairs et réglages personnalisés. Continuer ?")){
+        if(confirm("Es-tu bien sûr(e) ? Cette action est définitive.")){
+          try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+          data = chargerDonnees();
+          ouvrirPanneauParent();
+        }
+      }
+    });
+    dangerZone.appendChild(resetBtn);
+    frag.appendChild(dangerZone);
+    return frag;
+  }
+
+  function champTexte(labelTxt, placeholder, type){
+    var wrap = el("div",{class:"champ"});
+    wrap.appendChild(el("label",{},[txt(labelTxt)]));
+    var input = el("input",{type:type||"text", placeholder:placeholder||""});
+    wrap.appendChild(input);
+    return {wrap:wrap, input:input};
+  }
+
+  render();
+})();
+</script>
+
+</body>
+</html>
