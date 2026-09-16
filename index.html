@@ -262,6 +262,7 @@
     {"id":"t5","category":"chambre","label":"Ranger ses livres","emoji":"📚","points":1,"active":false},
     {"id":"t6","category":"maison","label":"Mettre la table","emoji":"🍽️","points":2,"active":true},
     {"id":"t7","category":"maison","label":"Débarrasser son assiette","emoji":"🥣","points":1,"active":true},
+    {"id":"t30","category":"maison","label":"Je me tiens bien à table et je mange avec la fourchette","emoji":"🍴","points":2,"active":true},
     {"id":"t8","category":"maison","label":"Essuyer la table","emoji":"🧽","points":1,"active":false},
     {"id":"t9","category":"maison","label":"Trier les déchets","emoji":"♻️","points":2,"active":false},
     {"id":"t10","category":"maison","label":"Arroser une plante","emoji":"🌱","points":1,"active":false},
@@ -314,11 +315,28 @@
   ],
   "badges":[
     {"id":"exploit","label":"Premier Exploit","emoji":"💥","desc":"Terminer toutes les missions d'une journée","type":"fullday","value":1},
+    {"id":"fulldays5","label":"Cinq Jours Héroïques","emoji":"🌠","desc":"5 journées parfaites","type":"fulldaystotal","value":5},
+    {"id":"fulldays10","label":"Dix Jours Sans Faille","emoji":"🏅","desc":"10 journées parfaites","type":"fulldaystotal","value":10},
+    {"id":"fulldays25","label":"Vingt-Cinq Exploits","emoji":"🎖️","desc":"25 journées parfaites","type":"fulldaystotal","value":25},
+    {"id":"streak3","label":"Trio de Missions","emoji":"🔥","desc":"3 jours d'affilée","type":"streak","value":3},
     {"id":"semaine","label":"Semaine Héroïque","emoji":"🦸","desc":"7 jours d'affilée, au moins la moitié des missions","type":"streak","value":7},
+    {"id":"streak14","label":"Deux Semaines de Courage","emoji":"🛡️","desc":"14 jours d'affilée","type":"streak","value":14},
+    {"id":"streak30","label":"Mois de Légende","emoji":"🏆","desc":"30 jours d'affilée","type":"streak","value":30},
+    {"id":"stars10","label":"Étincelle de Pouvoir","emoji":"🔹","desc":"10 éclairs gagnés","type":"stars","value":10},
+    {"id":"stars25","label":"Justicier en Herbe","emoji":"🥉","desc":"25 éclairs gagnés","type":"stars","value":25},
     {"id":"confirme","label":"Héros Confirmé","emoji":"⚡","desc":"50 éclairs gagnés","type":"stars","value":50},
+    {"id":"stars100","label":"Super-Héros","emoji":"🥈","desc":"100 éclairs gagnés","type":"stars","value":100},
+    {"id":"stars150","label":"Gardien du Quartier","emoji":"🥇","desc":"150 éclairs gagnés","type":"stars","value":150},
     {"id":"legende","label":"Légende du Quartier","emoji":"🌟","desc":"200 éclairs gagnés","type":"stars","value":200},
+    {"id":"stars300","label":"Légende Ultime","emoji":"👑","desc":"300 éclairs gagnés","type":"stars","value":300},
+    {"id":"chambre15","label":"Maître du Repaire","emoji":"🏰","desc":"15 missions Mon repaire réussies","type":"category","value":15,"category":"chambre"},
+    {"id":"maison15","label":"Pilier de la Maison","emoji":"🏠","desc":"15 missions Mission Maison réussies","type":"category","value":15,"category":"maison"},
     {"id":"amichampagne","label":"Meilleur Ami de Champagne","emoji":"🐾","desc":"15 missions Champagne réussies","type":"category","value":15,"category":"champagne"},
-    {"id":"maitrecalme","label":"Maître de son Calme","emoji":"🧘","desc":"15 missions du Pouvoir du Calme réussies","type":"category","value":15,"category":"calme"}
+    {"id":"champagne30","label":"Protecteur de Champagne","emoji":"🛡️","desc":"30 missions Champagne réussies","type":"category","value":30,"category":"champagne"},
+    {"id":"ecoute15","label":"Oreille de Super-Héros","emoji":"👂","desc":"15 missions Super Écoute réussies","type":"category","value":15,"category":"ecoute"},
+    {"id":"maitrecalme","label":"Maître de son Calme","emoji":"🧘","desc":"15 missions du Pouvoir du Calme réussies","type":"category","value":15,"category":"calme"},
+    {"id":"calme30","label":"Zen Suprême","emoji":"🌈","desc":"30 missions du Pouvoir du Calme réussies","type":"category","value":30,"category":"calme"},
+    {"id":"moi15","label":"Champion de l'Autonomie","emoji":"🎯","desc":"15 missions Entraînement de héros réussies","type":"category","value":15,"category":"moi"}
   ],
   "levels":["Apprenti héros","Héros en formation","Héros confirmé","Super-héros","Légende du quartier"]
 }
@@ -342,6 +360,21 @@
       if(!idsExistants[r.id]){ d.rewards.push(r); }
     }
     if(!d.nextRewardNum || d.nextRewardNum < 26) d.nextRewardNum = 26;
+
+    var idsBadgesExistants = {};
+    for(var k=0;k<d.badges.length;k++){ idsBadgesExistants[d.badges[k].id] = true; }
+    for(var m=0;m<defautsBruts.badges.length;m++){
+      var b = defautsBruts.badges[m];
+      if(!idsBadgesExistants[b.id]){ d.badges.push(b); }
+    }
+
+    var idsTachesExistantes = {};
+    for(var p=0;p<d.tasks.length;p++){ idsTachesExistantes[d.tasks[p].id] = true; }
+    for(var q=0;q<defautsBruts.tasks.length;q++){
+      var t = defautsBruts.tasks[q];
+      if(!idsTachesExistantes[t.id]){ d.tasks.push(t); }
+    }
+    if(!d.nextTaskNum || d.nextTaskNum < 31) d.nextTaskNum = 31;
     return d;
   }
 
@@ -357,7 +390,7 @@
     var defaut = JSON.parse(document.getElementById("defaultData").textContent);
     defaut.completions = {};
     defaut.redemptions = [];
-    defaut.nextTaskNum = 30;
+    defaut.nextTaskNum = 31;
     defaut.nextRewardNum = 26;
     return defaut;
   }
@@ -496,6 +529,14 @@
     return true;
   }
 
+  function totalJourneesParfaites(){
+    var n=0;
+    for(var dk in data.completions){
+      if(data.completions.hasOwnProperty(dk) && journeeComplete(dk)) n++;
+    }
+    return n;
+  }
+
   function comptageCategorieTotal(catId){
     var total=0;
     for(var dk in data.completions){
@@ -515,6 +556,7 @@
       for(var dk in data.completions){ if(data.completions.hasOwnProperty(dk) && journeeComplete(dk)) return true; }
       return false;
     }
+    if(badge.type==="fulldaystotal"){ return totalJourneesParfaites() >= badge.value; }
     if(badge.type==="streak"){ return calculerStreak() >= badge.value; }
     if(badge.type==="stars"){ return totalEtoilesGagnees() >= badge.value; }
     if(badge.type==="category"){ return comptageCategorieTotal(badge.category) >= badge.value; }
